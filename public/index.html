@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stock Chart with Polygon API and Chart.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.2/chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <canvas id="stockChart" width="800" height="400"></canvas>
+  <script>
+    const API_URL = 'http://localhost:3000/api/aggs';
+    const symbol = 'AAPL';
+    const fromDate = '2021-08-01';
+    const toDate = '2021-08-10';
+
+    axios.get(`${API_URL}/${symbol}/${fromDate}/${toDate}`)
+      .then(response => {
+        const data = response.data.results;
+        const chartData = {
+          labels: data.map(d => new Date(d.t)),
+          datasets: [{
+            label: `${symbol} stock price`,
+            data: data.map(d => d.c),
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderWidth: 1
+          }]
+        };
+
+        const chartConfig = {
+          type: 'line',
+          data: chartData,
+          options: {
+            scales: {
+              x: {
+                type: 'time',
+                time: {
+                  parser: "YYYY-MM-DDTHH:mm:ss.SSSZ",
+                  displayFormats: {
+                    millisecond: 'MMM DD, YYYY HH:mm:ss',
+                    second: 'MMM DD, YYYY HH:mm:ss',
+                    minute: 'MMM DD, YYYY HH:mm',
+                    hour: 'MMM DD, YYYY HH:mm',
+                    day: 'MMM DD, YYYY',
+                    week: 'MMM DD, YYYY',
+                    month: 'MMM YYYY',
+                    quarter: '[Q]Q - YYYY',
+                    year: 'YYYY',
+                  },
+                },
+                title: {
+                  display: true,
+                  text: 'Date'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: 'Price'
+                }
+              }
+            }
+          }
+        };
+
+        const ctx = document.getElementById('stockChart').getContext('2d');
+        new Chart(ctx, chartConfig);
+      }).catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  </script>
+</body>
+</html>
