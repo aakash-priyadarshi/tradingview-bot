@@ -14,8 +14,8 @@
   <script>
     const API_URL = 'http://localhost:3000/api/aggs';
     const symbol = 'AAPL';
-    const fromDate = '2021-08-01';
-    const toDate = '2021-08-10';
+    const fromDate = '2022-08-01';
+    const toDate = '2022-08-10';
 
     axios.get(`${API_URL}/${symbol}/${fromDate}/${toDate}`)
       .then(response => {
